@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:13:30 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/11 19:50:51 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/11 21:38:37 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <pthread.h>
 # include <stdio.h>
 # include <stdlib.h>
+# include <sys/time.h>
 # include <unistd.h>
 
 # define NC "\033[0m"
@@ -30,8 +31,15 @@
 
 typedef struct s_counter
 {
-	pthread_mutex_t	counter_mutex;
+	pthread_mutex_t	count_mutex;
 	unsigned int	count;
 }					t_counter;
+
+typedef struct s_locks
+{
+	pthread_mutex_t	lock_1;
+	pthread_mutex_t	lock_2;
+	unsigned int	count;
+}					t_locks;
 
 #endif

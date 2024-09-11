@@ -6,58 +6,84 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:13:48 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/11 19:57:53 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/11 22:51:53 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/philosophers.h"
+#include "../includes/philo.h"
 
-void	*thread_routine(void *data)
+// Le premier thread invoque cette routine :
+void	*thread_1_routine(void *data)
 {
-	pthread_t		tid;
-	t_counter		*counter;
-	unsigned int	i;
+	pthread_t	tid;
+	t_locks		*locks;
 
 	tid = pthread_self();
-	counter = (t_counter *)data;
-	pthread_mutex_lock(&counter->counter_mutex);
-	printf("%sTHREAD [%ld]: DEPART = %u.%s\n", YELLOW, tid, counter->count, NC);
-	pthread_mutex_unlock(&counter->counter_mutex);
-	i = 0;
-	while (i < TIMES_TO_COUNT)
-	{
-		pthread_mutex_lock(&counter->counter_mutex);
-		counter->count++;
-		pthread_mutex_unlock(&counter->counter_mutex);
-		i++;
-	}
-	pthread_mutex_lock(&counter->counter_mutex);
-	printf("%sTHREAD [%ld]: FIN = %u.%s\n", BYELLOW, tid, counter->count, NC);
-	pthread_mutex_unlock(&counter->counter_mutex);
-	return (NULL);
+	locks = (t_locks *)data;
+	printf("%sThread [%ld]: veut verrouiller lock 1%s\n", YELLOW, tid, NC);
+	pthread_mutex_lock(&locks->lock_1);
+	printf("%sThread [%ld]: possede lock 1%s\n", BYELLOW, tid, NC);
+	printf("%sThread [%ld]: veut verrouiller lock 2%s\n", YELLOW, tid, NC);
+	pthread_mutex_lock(&locks->lock_2);
+	printf("%sThread [%ld]: possede lock 2%s\n", BYELLOW, tid, NC);
+	locks->count += 1;
+	printf("%sThread [%ld]: deverouille lock 2%s\n", BYELLOW, tid, NC);
+	pthread_mutex_unlock(&locks->lock_2);
+	printf("%sThread [%ld]: deverouille lock 1%s\n", BYELLOW, tid, NC);
+	pthread_mutex_unlock(&locks->lock_1);
+	printf("%sThread [%ld]: termine%s\n", YELLOW, tid, NC);
+	return (NULL); // Le thread termine ici.
+}
+
+// Le deuxieme thread invoque cette routine :
+void	*thread_2_routine(void *data)
+{
+	pthread_t	tid;
+	t_locks		*locks;
+
+	tid = pthread_self();
+	locks = (t_locks *)data;
+	printf("%sThread [%ld]: veut verrouiller lock 2%s\n", YELLOW, tid, NC);
+	pthread_mutex_lock(&locks->lock_2);
+	printf("%sThread [%ld]: possede lock 2%s\n", BYELLOW, tid, NC);
+	printf("%sThread [%ld]: veut verrouiller lock 1%s\n", YELLOW, tid, NC);
+	pthread_mutex_lock(&locks->lock_1);
+	printf("%sThread [%ld]: possede lock 1%s\n", BYELLOW, tid, NC);
+	locks->count += 1;
+	printf("%sThread [%ld]: deverouille lock 1%s\n", BYELLOW, tid, NC);
+	pthread_mutex_unlock(&locks->lock_1);
+	printf("%sThread [%ld]: deverouille lock 2%s\n", BYELLOW, tid, NC);
+	pthread_mutex_unlock(&locks->lock_2);
+	printf("%sThread [%ld]: termine%s\n", YELLOW, tid, NC);
+	return (NULL); // Le thread termine ici.
 }
 
 int	main(void)
 {
-	pthread_t	tid1;
-	pthread_t	tid2;
-	t_counter	counter;
-
-	counter.count = 0;
-	pthread_mutex_init(&counter.counter_mutex, NULL);
-	printf("MAIN: Conter attendu = %s%s%s\n", GREEN, TIMES_TO_COUNT * 2, NC);
-	pthread_create(&tid1, NULL, thread_routine, &counter);
-	printf("MAIN: THREAD [%ld] créé\n", tid1);
-	pthread_create(&tid2, NULL, thread_routine, &counter);
-	printf("MAIN: THREAD [%ld] créé\n", tid2);
+	pthread_t tid1; // Identifiant du premier thread
+	pthread_t tid2; // Identifiant du second thread
+	t_locks locks;  // Structure contenant 2 mutex
+	locks.count = 0;
+	// Initialisation des deux mutex :
+	pthread_mutex_init(&locks.lock_1, NULL);
+	pthread_mutex_init(&locks.lock_2, NULL);
+	// Création des threads :
+	pthread_create(&tid1, NULL, thread_1_routine, &locks);
+	printf("Main: Creation du premier thread [%ld]\n", tid1);
+	pthread_create(&tid2, NULL, thread_2_routine, &locks);
+	printf("Main: Creation du second thread [%ld]\n", tid2);
+	// Union des threads :
 	pthread_join(tid1, NULL);
-	printf("MAIN: THREAD [%ld] join\n", tid1);
+	printf("Main: Union du premier thread [%ld]\n", tid1);
 	pthread_join(tid2, NULL);
-	printf("MAIN: THREAD [%ld] join\n", tid2);
-	if (counter.count != (2 * TIMES_TO_COUNT))
-		printf("%sMAIN: ERREUR: Counter = %u.%s\n", RED, counter.count, NC);
+	printf("Main: Union du second thread [%ld]\n", tid2);
+	// Évaluation du résultat :
+	if (locks.count == 2)
+		printf("%sMain: OK: Le compte est %d\n", GREEN, locks.count);
 	else
-		printf("%sMAIN: OK: Counter = %u.%s\n", GREEN, counter.count, NC);
-	pthread_mutex_destroy(&counter.counter_mutex);
+		printf("%sMain: ERREUR: Le compte est%u\n", RED, locks.count);
+	// Destruction des mutex :
+	pthread_mutex_destroy(&locks.lock_1);
+	pthread_mutex_destroy(&locks.lock_2);
 	return (0);
 }
