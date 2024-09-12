@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philosophers.h                                     :+:      :+:    :+:   */
+/*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:13:30 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/11 21:38:37 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/12 17:46:41 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define PHILOSOPHERS_H
 
 # include <pthread.h>
+# include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/time.h>
@@ -27,19 +28,33 @@
 # define YELLOW "\033[0;33m"
 # define BYELLOW "\033[1;33m"
 # define PURPLE "\033[0;35m"
-# define TIMES_TO_COUNT 21000
 
-typedef struct s_counter
-{
-	pthread_mutex_t	count_mutex;
-	unsigned int	count;
-}					t_counter;
 
-typedef struct s_locks
+typedef struct s_args
 {
-	pthread_mutex_t	lock_1;
-	pthread_mutex_t	lock_2;
-	unsigned int	count;
-}					t_locks;
+	int				t_die;
+	int				t_eat;
+	int				t_sleep;
+	int				nb_eat_needed;
+}					t_args;
+
+typedef struct s_philo
+{
+	unsigned int	id;
+	int				nb_forks_taken;
+	pthread_t		thread;
+	pthread_mutex_t	*left_fork;
+	pthread_mutex_t	*right_fork;
+	t_args			args;
+	bool			is_dead;
+	bool			is_eating;
+	bool			is_sleeping;
+}					t_philo;
+
+typedef struct s_game
+{
+	int				nb_philo;
+	t_philo			*philosophers;
+}					t_game;
 
 #endif
