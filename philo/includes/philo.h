@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:13:30 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/13 19:00:30 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/13 23:01:53 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,24 @@
 # include <unistd.h>
 
 // COLORS
-# define NC "\033[0m"
-# define BLACK "\033[0;30m"
-# define BLUE "\033[0;34m"
-# define RED "\033[0;31m"
-# define GREEN "\033[0;32m"
-# define YELLOW "\033[0;33m"
-# define BYELLOW "\033[1;33m"
-# define PURPLE "\033[0;35m"
+# define DEAD_COLOR "\033[1;31m"
+# define EATING_COLOR "\033[1;32m"
+# define SLEEPING_COLOR "\033[1;33m"
+# define THINKING_COLOR "\033[1;34m"
+# define RESET_COLOR "\033[0m"
+# define ERROR_MESSAGE_COLOR "\033[1;30m"
+
+// ERRORS
+# define ERROR_ARGS_MESSAGE "Usage: ./philo nb_philo t_die t_eat t_sleep [nb_eat_needed]"
+# define ERROR_INIT_MESSAGE "Initialize game failed"
+# define ERROR_THREAD_MESSAGE "Thread creation failed"
+# define ERROR_JOIN_MESSAGE "Thread join failed"
+# define ERROR_MUTEX_MESSAGE "Mutex initialization failed"
+# define ERROR_MALLOC_MESSAGE "Memory allocation failed"
+# define ERROR_SIMULATION_MESSAGE "Simulation failed"
 
 # define MIN_NB_PHILOSOPHERS 2
+# define MAX_NB_PHILOSOPHERS 200
 # define MIN_TIME_TO_DIE 60
 # define MIN_TIME_TO_EAT 10
 # define MIN_TIME_TO_SLEEP 10
@@ -50,10 +58,12 @@ typedef enum s_error
 	ERROR_ARGS,
 	ERROR_MALLOC,
 	ERROR_MUTEX_INIT,
-	ERROR_THREAD_CREATE
+	ERROR_THREAD_CREATE,
+	ERROR_THREAD_JOIN
 }					t_error;
 typedef struct s_args
 {
+	unsigned int	nb_philo;
 	int				t_die;
 	int				t_eat;
 	int				t_sleep;
@@ -63,23 +73,23 @@ typedef struct s_args
 typedef struct s_philo
 {
 	unsigned int	id;
-	int				nb_forks_taken;
 	pthread_t		thread;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	t_state			state;
-	long long		last_meal;
-	int				meals_eaten;
+	size_t			last_meal;
+	unsigned int	meals_eaten;
+	struct s_game	*game;
 }					t_philo;
 
 typedef struct s_game
 {
-	unsigned int	nb_philo;
-	t_args			args;
+	size_t			start_time;
 	t_philo			*philosophers;
 	pthread_mutex_t	*forks;
+	pthread_mutex_t	meal_lock;
 	pthread_mutex_t	state_mutex;
-	bool			state_mutex_initialized;
+	t_args			args;
 	bool			simulation_ended;
 
 }					t_game;
@@ -89,8 +99,21 @@ t_error				ft_init_game(t_game *game, int ac, char **av);
 
 /**************UTILS**************/
 void				ft_print_error(const char *message);
-long long			get_time_in_ms(void);
+void				ft_print_state(t_game *game, t_philo *philo);
+size_t				get_current_time(void);
 int					ft_atoi(const char *str);
+
+/**************TIME**************/
+int					ft_usleep(size_t milliseconds);
+
+/**************LOGGER**************/
+void				ft_think(t_game *game, t_philo *philo);
+void				ft_sleeping(t_game *game, t_philo *philo);
+void				ft_eating(t_game *game, t_philo *philo);
+
+/**************PHILO**************/
+void				*ft_philo(void *arg);
+t_error				ft_run_simulation(t_game *game);
 
 /**************CLEANUP**************/
 void				ft_cleanup(t_game *game);

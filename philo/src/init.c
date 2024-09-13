@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:34 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/13 18:59:39 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/13 22:50:20 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static t_error	ft_parse_args(t_game *game, int ac, char **av)
 {
 	if (ac < 5 || ac > 6)
 		return (ERROR_ARGS);
-	game->nb_philo = ft_atoi(av[1]);
+	game->args.nb_philo = ft_atoi(av[1]);
 	game->args.t_die = ft_atoi(av[2]);
 	game->args.t_eat = ft_atoi(av[3]);
 	game->args.t_sleep = ft_atoi(av[4]);
@@ -24,10 +24,8 @@ static t_error	ft_parse_args(t_game *game, int ac, char **av)
 		game->args.nb_eat_needed = ft_atoi(av[5]);
 	else
 		game->args.nb_eat_needed = -1;
-	if (game->nb_philo < MIN_NB_PHILOSOPHERS
-		|| game->args.t_die < MIN_TIME_TO_DIE
-		|| game->args.t_eat < MIN_TIME_TO_EAT
-		|| game->args.t_sleep < MIN_TIME_TO_SLEEP || (ac == 6
+	if (game->args.nb_philo < MIN_NB_PHILOSOPHERS
+		|| game->args.nb_philo > MAX_NB_PHILOSOPHERS || (ac == 6
 			&& game->args.nb_eat_needed <= 0))
 		return (ERROR_ARGS);
 	return (SUCCESS);
@@ -37,11 +35,11 @@ static t_error	ft_init_mutexes(t_game *game)
 {
 	unsigned int	i;
 
-	game->forks = malloc(sizeof(pthread_mutex_t) * game->nb_philo);
+	game->forks = malloc(sizeof(pthread_mutex_t) * game->args.nb_philo);
 	if (!game->forks)
 		return (ERROR_MALLOC);
 	i = 0;
-	while (i < game->nb_philo)
+	while (i < game->args.nb_philo)
 	{
 		if (pthread_mutex_init(&game->forks[i], NULL))
 		{
@@ -53,12 +51,12 @@ static t_error	ft_init_mutexes(t_game *game)
 		}
 		i++;
 	}
-	if (pthread_mutex_init(&game->state_mutex, NULL))
+	if (pthread_mutex_init(&game->state_mutex, NULL)
+		|| pthread_mutex_init(&game->meal_lock, NULL))
 	{
 		ft_destroy_mutexes(game);
 		return (ERROR_MUTEX_INIT);
 	}
-	game->state_mutex_initialized = true;
 	return (SUCCESS);
 }
 
@@ -66,20 +64,20 @@ static t_error	ft_init_philosophers(t_game *game)
 {
 	unsigned int	i;
 
-	game->philosophers = malloc(sizeof(t_philo) * game->nb_philo);
+	game->philosophers = malloc(sizeof(t_philo) * game->args.nb_philo);
 	if (!game->philosophers)
 		return (ERROR_MALLOC);
 	i = 0;
-	while (i < game->nb_philo)
+	while (i < game->args.nb_philo)
 	{
 		game->philosophers[i].id = i + 1;
-		game->philosophers[i].nb_forks_taken = 0;
 		game->philosophers[i].state = THINKING;
-		game->philosophers[i].last_meal = get_time_in_ms();
+		game->philosophers[i].last_meal = get_current_time();
 		game->philosophers[i].meals_eaten = 0;
 		game->philosophers[i].left_fork = &game->forks[i];
 		game->philosophers[i].right_fork = &game->forks[(i + 1)
-			% game->nb_philo];
+			% game->args.nb_philo];
+		game->philosophers[i].game = game;
 		i++;
 	}
 	return (SUCCESS);
@@ -103,5 +101,6 @@ t_error	ft_init_game(t_game *game, int ac, char **av)
 		return (error);
 	}
 	game->simulation_ended = false;
+	game->start_time = get_current_time();
 	return (SUCCESS);
 }
