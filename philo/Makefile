@@ -6,7 +6,7 @@
 #    By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/12 19:18:04 by jcohen            #+#    #+#              #
-#    Updated: 2024/09/12 19:27:01 by jcohen           ###   ########.fr        #
+#    Updated: 2024/09/13 17:37:53 by jcohen           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,8 +22,7 @@ SRC = src
 OBJ = obj
 
 # Source files
-SRCS = $(SRC)/main.c $(SRC)/init.c $(SRC)/utils.c
-
+SRCS = $(SRC)/main.c $(SRC)/init.c $(SRC)/utils.c $(SRC)/cleanup.c
 # Object files
 OBJS = $(SRCS:$(SRC)/%.c=$(OBJ)/%.o)
 
