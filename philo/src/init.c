@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:34 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/13 22:50:20 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/14 00:06:28 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,18 +16,24 @@ static t_error	ft_parse_args(t_game *game, int ac, char **av)
 {
 	if (ac < 5 || ac > 6)
 		return (ERROR_ARGS);
+	if (!is_valid_arg(av[1]) || !is_valid_arg(av[2]) || !is_valid_arg(av[3])
+		|| !is_valid_arg(av[4]))
+		return (ERROR_ARGS);
 	game->args.nb_philo = ft_atoi(av[1]);
+	if (game->args.nb_philo < MIN_NB_PHILOSOPHERS
+		|| game->args.nb_philo > MAX_NB_PHILOSOPHERS)
+		return (ERROR_ARGS);
 	game->args.t_die = ft_atoi(av[2]);
 	game->args.t_eat = ft_atoi(av[3]);
 	game->args.t_sleep = ft_atoi(av[4]);
 	if (ac == 6)
+	{
+		if (!is_valid_arg(av[5]) || ft_atoi(av[5]) <= 0)
+			return (ERROR_ARGS);
 		game->args.nb_eat_needed = ft_atoi(av[5]);
+	}
 	else
 		game->args.nb_eat_needed = -1;
-	if (game->args.nb_philo < MIN_NB_PHILOSOPHERS
-		|| game->args.nb_philo > MAX_NB_PHILOSOPHERS || (ac == 6
-			&& game->args.nb_eat_needed <= 0))
-		return (ERROR_ARGS);
 	return (SUCCESS);
 }
 

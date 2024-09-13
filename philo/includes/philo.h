@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:13:30 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/13 23:01:53 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/14 00:06:50 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@
 # define SLEEPING_COLOR "\033[1;33m"
 # define THINKING_COLOR "\033[1;34m"
 # define RESET_COLOR "\033[0m"
-# define ERROR_MESSAGE_COLOR "\033[1;30m"
+# define ATE_ENOUGH_COLOR "\033[1;35m"
+# define ERROR_MESSAGE_COLOR "\033[1;31m"
 
 // ERRORS
 # define ERROR_ARGS_MESSAGE "Usage: ./philo nb_philo t_die t_eat t_sleep [nb_eat_needed]"
@@ -40,9 +41,6 @@
 
 # define MIN_NB_PHILOSOPHERS 2
 # define MAX_NB_PHILOSOPHERS 200
-# define MIN_TIME_TO_DIE 60
-# define MIN_TIME_TO_EAT 10
-# define MIN_TIME_TO_SLEEP 10
 
 typedef enum s_state
 {
@@ -78,7 +76,7 @@ typedef struct s_philo
 	pthread_mutex_t	*right_fork;
 	t_state			state;
 	size_t			last_meal;
-	unsigned int	meals_eaten;
+	int				meals_eaten;
 	struct s_game	*game;
 }					t_philo;
 
@@ -100,10 +98,13 @@ t_error				ft_init_game(t_game *game, int ac, char **av);
 /**************UTILS**************/
 void				ft_print_error(const char *message);
 void				ft_print_state(t_game *game, t_philo *philo);
-size_t				get_current_time(void);
+
 int					ft_atoi(const char *str);
+int					is_digit(char c);
+int					is_valid_arg(char *str);
 
 /**************TIME**************/
+size_t				get_current_time(void);
 int					ft_usleep(size_t milliseconds);
 
 /**************LOGGER**************/
@@ -112,7 +113,9 @@ void				ft_sleeping(t_game *game, t_philo *philo);
 void				ft_eating(t_game *game, t_philo *philo);
 
 /**************PHILO**************/
-void				*ft_philo(void *arg);
+void				*ft_check_death(void *arg);
+void				*check_meal_count(void *arg);
+void				*ft_philo_loop(void *arg);
 t_error				ft_run_simulation(t_game *game);
 
 /**************CLEANUP**************/

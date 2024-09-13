@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:31 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/13 23:03:00 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/14 00:24:48 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,12 @@
 void	ft_print_error(const char *message)
 {
 	if (message)
-		printf("%sError: %s\n", ERROR_MESSAGE_COLOR, message);
+		printf("%s%s\n", ERROR_MESSAGE_COLOR, message);
+}
+
+int	is_digit(char c)
+{
+	return (c >= '0' && c <= '9');
 }
 
 int	ft_atoi(const char *str)
@@ -34,12 +39,25 @@ int	ft_atoi(const char *str)
 		sign = -1;
 	if (str[i] == '-' || str[i] == '+')
 		i++;
-	while (str[i] >= '0' && str[i] <= '9')
+	while (is_digit(str[i]))
 	{
 		res = res * 10 + str[i] - '0';
 		i++;
 	}
 	return (res * sign);
+}
+int	is_valid_arg(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (!is_digit(str[i]))
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
 static const char	*get_state_color(t_state state)
@@ -69,18 +87,14 @@ static const char	*get_state_string(t_state state)
 }
 void	ft_print_state(t_game *game, t_philo *philo)
 {
-	size_t		current_time;
-	const char	*state;
-	const char	*color;
+	size_t	current_time;
 
 	pthread_mutex_lock(&game->state_mutex);
 	if (!game->simulation_ended)
 	{
-		current_time = get_current_time() - game->start_time;
-		state = get_state_string(philo->state);
-		color = get_state_color(philo->state);
-		printf("%s %zu %u %s %s\n", color, current_time, philo->id, state,
-			RESET_COLOR);
+		current_time = (get_current_time() - game->start_time);
+		printf("%s %zu %u %s %s\n", get_state_color(philo->state), current_time,
+			philo->id, get_state_string(philo->state), RESET_COLOR);
 		if (philo->state == DEAD)
 			game->simulation_ended = true;
 	}

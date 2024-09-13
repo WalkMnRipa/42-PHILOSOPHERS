@@ -6,22 +6,93 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:27 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/13 22:47:27 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/14 00:04:45 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-void	*ft_philo(void *arg)
+void	*ft_check_death(void *arg)
+{
+	t_game			*game;
+	size_t			current_time;
+	unsigned int	i;
+
+	game = (t_game *)arg;
+	while (!game->simulation_ended)
+	{
+		i = 0;
+		while (i < game->args.nb_philo)
+		{
+			pthread_mutex_lock(&game->meal_lock);
+			current_time = get_current_time();
+			if (current_time
+				- game->philosophers[i].last_meal > (size_t)game->args.t_die)
+			{
+				game->philosophers[i].state = DEAD;
+				ft_print_state(game, &game->philosophers[i]);
+				game->simulation_ended = true;
+				pthread_mutex_unlock(&game->meal_lock);
+				return (NULL);
+			}
+			pthread_mutex_unlock(&game->meal_lock);
+			i++;
+		}
+		ft_usleep(1000);
+	}
+	return (NULL);
+}
+
+void	*check_meal_count(void *arg)
+{
+	t_game			*game;
+	bool			ate_enough;
+	unsigned int	i;
+
+	game = (t_game *)arg;
+	while (!game->simulation_ended)
+	{
+		if (game->args.nb_eat_needed == -1)
+			return (NULL);
+		ate_enough = 1;
+		pthread_mutex_lock(&game->meal_lock);
+		i = 0;
+		while (i < game->args.nb_philo)
+		{
+			if (game->philosophers[i].meals_eaten < game->args.nb_eat_needed)
+			{
+				ate_enough = 0;
+				break ;
+			}
+			i++;
+		}
+		pthread_mutex_unlock(&game->meal_lock);
+		if (ate_enough)
+		{
+			pthread_mutex_lock(&game->state_mutex);
+			printf("%s %zu All philosophers have eaten enough!\n",
+				ATE_ENOUGH_COLOR, get_current_time() - game->start_time);
+			game->simulation_ended = true;
+			pthread_mutex_unlock(&game->state_mutex);
+			return (NULL);
+		}
+		usleep(1000);
+	}
+	return (NULL);
+}
+
+void	*ft_philo_loop(void *arg)
 {
 	t_philo	*philo;
+	t_game	*game;
 
 	philo = (t_philo *)arg;
-	while (1)
+	game = philo->game;
+	while (!game->simulation_ended)
 	{
-		ft_think(philo->game, philo);
-		ft_eating(philo->game, philo);
-		ft_sleeping(philo->game, philo);
+		ft_think(game, philo);
+		ft_eating(game, philo);
+		ft_sleeping(game, philo);
 	}
 	return (NULL);
 }
@@ -33,11 +104,17 @@ t_error	ft_run_simulation(t_game *game)
 	game->start_time = get_current_time();
 	while (i < game->args.nb_philo)
 	{
-		if (pthread_create(&game->philosophers[i].thread, NULL, &ft_philo,
+		if (pthread_create(&game->philosophers[i].thread, NULL, &ft_philo_loop,
 				&game->philosophers[i]))
 			return (ERROR_THREAD_CREATE);
 		i++;
 	}
+	if (pthread_create(&game->philosophers[0].thread, NULL, &ft_check_death,
+			game))
+		return (ERROR_THREAD_CREATE);
+	if (pthread_create(&game->philosophers[0].thread, NULL, &check_meal_count,
+			game))
+		return (ERROR_THREAD_CREATE);
 	i = 0;
 	while (i < game->args.nb_philo)
 	{
