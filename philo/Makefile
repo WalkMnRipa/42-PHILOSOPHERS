@@ -7,9 +7,9 @@ RESET = \033[0m
 
 NAME = philo
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -pthread -g
+CFLAGS = -Wall -Wextra -Werror
 
-SRCS = src/main.c src/init.c src/utils.c src/philo.c src/time.c src/logger.c src/cleanup.c
+SRCS = src/main.c src/init.c src/utils.c src/philo.c src/time.c src/logger.c src/cleanup.c src/print_msg.c
 
 OBJS_DIR = objs
 OBJS = $(SRCS:%.c=$(OBJS_DIR)/%.o)
@@ -26,13 +26,7 @@ $(NAME): $(OBJS)
 $(OBJS_DIR)/%.o: %.c
 	@mkdir -p $(@D)
 	@printf "$(YELLOW)Compiling $<... $(RESET)"
-	@if $(CC) $(CFLAGS) -MMD -MP -I./includes -c $< -o $@; then \
-		printf "$(GREEN)Done!$(RESET)\n"; \
-	else \
-		printf "$(RED)Failed!$(RESET)\n"; \
-		exit 1; \
-	fi
-
+	@if $(CC) $(CFLAGS) -MMD -MP -I./includes -c $< -o $@ 2>/dev/null; then 		printf "$(GREEN)Done!$(RESET)\n"; 	else 		printf "$(RED)Failed!$(RESET)\n"; 		exit 1; 	fi
 
 clean:
 	@echo "$(YELLOW)Cleaning up...$(RESET)"

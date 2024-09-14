@@ -6,12 +6,12 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:13:30 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/14 00:06:50 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/14 01:24:56 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PHILOSOPHERS_H
-# define PHILOSOPHERS_H
+#ifndef PHILO_H
+# define PHILO_H
 
 # include <pthread.h>
 # include <stdbool.h>
@@ -21,23 +21,17 @@
 # include <sys/time.h>
 # include <unistd.h>
 
-// COLORS
 # define DEAD_COLOR "\033[1;31m"
 # define EATING_COLOR "\033[1;32m"
 # define SLEEPING_COLOR "\033[1;33m"
 # define THINKING_COLOR "\033[1;34m"
 # define RESET_COLOR "\033[0m"
 # define ATE_ENOUGH_COLOR "\033[1;35m"
-# define ERROR_MESSAGE_COLOR "\033[1;31m"
+# define ERROR_MSG_COLOR "\033[1;37m"
 
-// ERRORS
-# define ERROR_ARGS_MESSAGE "Usage: ./philo nb_philo t_die t_eat t_sleep [nb_eat_needed]"
-# define ERROR_INIT_MESSAGE "Initialize game failed"
-# define ERROR_THREAD_MESSAGE "Thread creation failed"
-# define ERROR_JOIN_MESSAGE "Thread join failed"
-# define ERROR_MUTEX_MESSAGE "Mutex initialization failed"
-# define ERROR_MALLOC_MESSAGE "Memory allocation failed"
-# define ERROR_SIMULATION_MESSAGE "Simulation failed"
+# define ERROR_ARGS_MSG "Usage: ./philo nb_philo t_die t_eat t_sleep [nb_eat]"
+# define ERROR_INIT_MSG "Initialize game failed"
+# define ERROR_SIMULATION_MSG "Simulation failed"
 
 # define MIN_NB_PHILOSOPHERS 2
 # define MAX_NB_PHILOSOPHERS 200
@@ -59,6 +53,7 @@ typedef enum s_error
 	ERROR_THREAD_CREATE,
 	ERROR_THREAD_JOIN
 }					t_error;
+
 typedef struct s_args
 {
 	unsigned int	nb_philo;
@@ -105,10 +100,10 @@ int					is_valid_arg(char *str);
 
 /**************TIME**************/
 size_t				get_current_time(void);
-int					ft_usleep(size_t milliseconds);
+void				ft_usleep(size_t milliseconds);
 
 /**************LOGGER**************/
-void				ft_think(t_game *game, t_philo *philo);
+void				ft_thinking(t_game *game, t_philo *philo);
 void				ft_sleeping(t_game *game, t_philo *philo);
 void				ft_eating(t_game *game, t_philo *philo);
 

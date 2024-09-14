@@ -6,13 +6,13 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:36 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/14 00:23:10 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/14 00:57:25 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-void	ft_think(t_game *game, t_philo *philo)
+void	ft_thinking(t_game *game, t_philo *philo)
 {
 	philo->state = THINKING;
 	ft_print_state(game, philo);

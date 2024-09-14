@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:34 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/14 00:06:28 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/14 01:04:25 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,7 @@ static t_error	ft_parse_args(t_game *game, int ac, char **av)
 		|| !is_valid_arg(av[4]))
 		return (ERROR_ARGS);
 	game->args.nb_philo = ft_atoi(av[1]);
-	if (game->args.nb_philo < MIN_NB_PHILOSOPHERS
-		|| game->args.nb_philo > MAX_NB_PHILOSOPHERS)
+	if (game->args.nb_philo > MAX_NB_PHILOSOPHERS)
 		return (ERROR_ARGS);
 	game->args.t_die = ft_atoi(av[2]);
 	game->args.t_eat = ft_atoi(av[3]);
@@ -51,18 +50,13 @@ static t_error	ft_init_mutexes(t_game *game)
 		{
 			while (i > 0)
 				pthread_mutex_destroy(&game->forks[--i]);
-			free(game->forks);
-			game->forks = NULL;
-			return (ERROR_MUTEX_INIT);
+			return (free(game->forks), game->forks = NULL, ERROR_MUTEX_INIT);
 		}
 		i++;
 	}
 	if (pthread_mutex_init(&game->state_mutex, NULL)
 		|| pthread_mutex_init(&game->meal_lock, NULL))
-	{
-		ft_destroy_mutexes(game);
-		return (ERROR_MUTEX_INIT);
-	}
+		return (ft_destroy_mutexes(game), ERROR_MUTEX_INIT);
 	return (SUCCESS);
 }
 
@@ -107,6 +101,5 @@ t_error	ft_init_game(t_game *game, int ac, char **av)
 		return (error);
 	}
 	game->simulation_ended = false;
-	game->start_time = get_current_time();
 	return (SUCCESS);
 }
