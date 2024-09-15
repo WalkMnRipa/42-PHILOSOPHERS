@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:13:30 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/14 02:16:08 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/15 19:49:06 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,15 @@
 # define ERROR_INIT_MSG "Initialize game failed"
 # define ERROR_SIMULATION_MSG "Simulation failed"
 
+# define MSG_DIED "died"
+# define MSG_IS_EATING "is eating"
+# define MSG_IS_SLEEPING "is sleeping"
+# define MSG_IS_THINKING "is thinking"
+# define MSG_FORK "has taken a fork"
+
 # define MIN_NB_PHILOSOPHERS 2
 # define MAX_NB_PHILOSOPHERS 200
+# define MIN_T_ARGS 60
 
 typedef enum s_state
 {
@@ -92,7 +99,8 @@ t_error				ft_init_game(t_game *game, int ac, char **av);
 
 /**************UTILS**************/
 void				ft_print_error(const char *message);
-void				ft_print_state(t_game *game, t_philo *philo);
+void				ft_print_state(t_game *game, t_philo *philo,
+						const char *msg);
 
 int					ft_atoi(const char *str);
 int					is_digit(char c);
@@ -108,8 +116,8 @@ void				ft_sleeping(t_game *game, t_philo *philo);
 void				ft_eating(t_game *game, t_philo *philo);
 
 /**************PHILO**************/
-void				*ft_check_death(void *arg);
-void				*check_meal_count(void *arg);
+bool				ft_check_death(t_game *game);
+bool				ft_check_meal_count(t_game *game);
 void				*ft_philo_loop(void *arg);
 t_error				ft_run_simulation(t_game *game);
 

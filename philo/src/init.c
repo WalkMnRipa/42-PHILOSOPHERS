@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:34 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/14 02:15:53 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/15 19:01:30 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@ static t_error	ft_parse_args(t_game *game, int ac, char **av)
 	game->args.t_die = ft_atoi(av[2]);
 	game->args.t_eat = ft_atoi(av[3]);
 	game->args.t_sleep = ft_atoi(av[4]);
+	if (game->args.t_die < MIN_T_ARGS || game->args.t_eat < MIN_T_ARGS
+		|| game->args.t_sleep < MIN_T_ARGS)
+		return (ERROR_ARGS);
 	if (ac == 6)
 	{
 		if (!is_valid_arg(av[5]) || ft_atoi(av[5]) <= 0)

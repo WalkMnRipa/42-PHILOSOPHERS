@@ -6,65 +6,67 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:27 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/14 02:16:02 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/15 19:59:42 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-void	*ft_check_death(void *arg)
+bool	ft_check_death(t_game *game)
 {
-	t_game			*game;
+	unsigned int	i;
 	size_t			current_time;
-	unsigned int	i;
 
-	game = (t_game *)arg;
-	while (!game->simulation_ended)
+	i = 0;
+	while (i < game->args.nb_philo)
 	{
-		i = 0;
-		while (i < game->args.nb_philo)
-		{
-			pthread_mutex_lock(&game->meal_lock);
-			current_time = get_current_time();
-			if (current_time
-				- game->philosophers[i].last_meal > (size_t)game->args.t_die)
-				return (game->philosophers[i].state = DEAD, ft_print_state(game,
-						&game->philosophers[i]), game->simulation_ended = true,
-					pthread_mutex_unlock(&game->meal_lock), NULL);
-			pthread_mutex_unlock(&game->meal_lock);
-			i++;
-		}
-		ft_usleep(1000);
-	}
-	return (NULL);
-}
-
-void	*check_meal_count(void *arg)
-{
-	t_game			*game;
-	bool			ate_enough;
-	unsigned int	i;
-
-	game = (t_game *)arg;
-	while (!game->simulation_ended && game->args.nb_eat_needed != -1)
-	{
-		ate_enough = true;
 		pthread_mutex_lock(&game->meal_lock);
-		i = 0;
-		while (i < game->args.nb_philo && ate_enough)
+		current_time = get_current_time();
+		if (current_time
+			- game->philosophers[i].last_meal > (size_t)game->args.t_die)
 		{
-			if (game->philosophers[i].meals_eaten < game->args.nb_eat_needed)
-				ate_enough = false;
-			i++;
+			game->philosophers[i].state = DEAD;
+			pthread_mutex_unlock(&game->meal_lock);
+			ft_print_state(game, &game->philosophers[i], MSG_DIED);
+			pthread_mutex_lock(&game->meal_lock);
+			game->simulation_ended = true;
+			pthread_mutex_unlock(&game->meal_lock);
+			return (true);
 		}
 		pthread_mutex_unlock(&game->meal_lock);
-		if (ate_enough)
-			return (pthread_mutex_lock(&game->state_mutex),
-				game->simulation_ended = true,
-				pthread_mutex_unlock(&game->state_mutex), NULL);
-		usleep(1000);
+		i++;
 	}
-	return (NULL);
+	return (false);
+}
+
+bool	ft_check_meal_count(t_game *game)
+{
+	unsigned int	i;
+	bool			ate_enough;
+
+	ate_enough = true;
+	if (game->args.nb_eat_needed == -1)
+		return (false);
+	pthread_mutex_lock(&game->meal_lock);
+	i = 0;
+	while (i < game->args.nb_philo)
+	{
+		if (game->philosophers[i].meals_eaten < game->args.nb_eat_needed)
+		{
+			ate_enough = false;
+			break ;
+		}
+		i++;
+	}
+	pthread_mutex_unlock(&game->meal_lock);
+	if (ate_enough)
+	{
+		pthread_mutex_lock(&game->state_mutex);
+		game->simulation_ended = true;
+		pthread_mutex_unlock(&game->state_mutex);
+		return (true);
+	}
+	return (false);
 }
 
 void	*ft_philo_loop(void *arg)
@@ -74,8 +76,15 @@ void	*ft_philo_loop(void *arg)
 
 	philo = (t_philo *)arg;
 	game = philo->game;
-	while (!game->simulation_ended)
+	while (1)
 	{
+		pthread_mutex_lock(&game->state_mutex);
+		if (game->simulation_ended)
+		{
+			pthread_mutex_unlock(&game->state_mutex);
+			break ;
+		}
+		pthread_mutex_unlock(&game->state_mutex);
 		ft_thinking(game, philo);
 		ft_eating(game, philo);
 		ft_sleeping(game, philo);
@@ -96,12 +105,16 @@ t_error	ft_run_simulation(t_game *game)
 			return (ERROR_THREAD_CREATE);
 		i++;
 	}
-	if (pthread_create(&game->philosophers[0].thread, NULL, &ft_check_death,
-			game))
-		return (ERROR_THREAD_CREATE);
-	if (pthread_create(&game->philosophers[0].thread, NULL, &check_meal_count,
-			game))
-		return (ERROR_THREAD_CREATE);
+	while (!game->simulation_ended)
+	{
+		if (ft_check_death(game) || ft_check_meal_count(game))
+		{
+			pthread_mutex_lock(&game->state_mutex);
+			game->simulation_ended = true;
+			pthread_mutex_unlock(&game->state_mutex);
+		}
+		usleep(1000);
+	}
 	i = 0;
 	while (i < game->args.nb_philo)
 	{
