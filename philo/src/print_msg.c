@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 01:00:19 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/16 16:36:07 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/16 17:33:59 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ void	ft_print_error(const char *message)
 
 static char	*get_color(t_state state)
 {
+	if (state == FORK)
+		return (FORK_COLOR);
 	if (state == EATING)
 		return (EATING_COLOR);
 	if (state == SLEEPING)
@@ -41,6 +43,8 @@ void	ft_print_state(t_game *game, t_philo *philo, const char *msg)
 		current_time = get_current_time() - game->start_time;
 		printf("%s %zu %d %s\n", get_color(philo->state), current_time,
 			philo->id, msg);
+		if (ft_strcmp(msg, MSG_DIED) == 0)
+			game->simulation_ended = true;
 	}
 	pthread_mutex_unlock(&game->state_mutex);
 }

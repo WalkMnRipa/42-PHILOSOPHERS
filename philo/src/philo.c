@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:27 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/16 17:15:59 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/16 17:34:47 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,15 @@ bool	ft_check_death(t_game *game)
 {
 	unsigned int	i;
 	size_t			current_time;
+	size_t			since_last_meal;
 
 	i = 0;
 	while (i < game->args.nb_philo)
 	{
 		pthread_mutex_lock(&game->meal_lock);
 		current_time = get_current_time();
-		if (current_time
-			- game->philosophers[i].last_meal > (size_t)game->args.t_die)
+		since_last_meal = current_time - game->philosophers[i].last_meal;
+		if (since_last_meal > (size_t)game->args.t_die)
 		{
 			game->philosophers[i].state = DEAD;
 			pthread_mutex_unlock(&game->meal_lock);

@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:36 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/16 17:07:18 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/16 17:25:43 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ void	ft_sleeping(t_game *game, t_philo *philo)
 void	ft_eating(t_game *game, t_philo *philo)
 {
 	pthread_mutex_lock(philo->right_fork);
+	philo->state = FORK;
 	ft_print_state(game, philo, MSG_FORK);
 	if (game->args.nb_philo == 1)
 	{
@@ -36,6 +37,7 @@ void	ft_eating(t_game *game, t_philo *philo)
 		return ;
 	}
 	pthread_mutex_lock(philo->left_fork);
+	philo->state = FORK;
 	ft_print_state(game, philo, MSG_FORK);
 	pthread_mutex_lock(&game->state_mutex);
 	if (game->simulation_ended)

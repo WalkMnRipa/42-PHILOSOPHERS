@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:13:30 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/16 16:31:23 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/16 17:34:24 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 
 # define DEAD_COLOR "\033[1;31m"
 # define EATING_COLOR "\033[1;32m"
+# define FORK_COLOR "\033[1;36m"
 # define SLEEPING_COLOR "\033[1;33m"
 # define THINKING_COLOR "\033[1;34m"
 # define RESET_COLOR "\033[0m"
@@ -48,7 +49,8 @@ typedef enum s_state
 	EATING,
 	SLEEPING,
 	THINKING,
-	DEAD
+	DEAD,
+	FORK
 }					t_state;
 
 typedef enum s_error
@@ -103,6 +105,7 @@ void				ft_print_state(t_game *game, t_philo *philo,
 int					ft_atoi(const char *str);
 int					is_digit(char c);
 int					is_valid_arg(char *str);
+int					ft_strcmp(const char *s1, const char *s2);
 
 /**************TIME**************/
 size_t				get_current_time(void);
