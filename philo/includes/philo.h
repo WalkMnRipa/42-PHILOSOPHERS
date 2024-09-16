@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:13:30 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/15 19:49:06 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/16 16:31:23 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ typedef struct s_args
 	int				t_die;
 	int				t_eat;
 	int				t_sleep;
-	int				nb_eat_needed;
 }					t_args;
 
 typedef struct s_philo
@@ -78,7 +77,6 @@ typedef struct s_philo
 	pthread_mutex_t	*right_fork;
 	t_state			state;
 	size_t			last_meal;
-	int				meals_eaten;
 	struct s_game	*game;
 }					t_philo;
 
@@ -117,7 +115,6 @@ void				ft_eating(t_game *game, t_philo *philo);
 
 /**************PHILO**************/
 bool				ft_check_death(t_game *game);
-bool				ft_check_meal_count(t_game *game);
 void				*ft_philo_loop(void *arg);
 t_error				ft_run_simulation(t_game *game);
 

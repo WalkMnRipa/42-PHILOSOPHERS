@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:34 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/15 19:01:30 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/16 16:31:58 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,6 @@ static t_error	ft_parse_args(t_game *game, int ac, char **av)
 	if (game->args.t_die < MIN_T_ARGS || game->args.t_eat < MIN_T_ARGS
 		|| game->args.t_sleep < MIN_T_ARGS)
 		return (ERROR_ARGS);
-	if (ac == 6)
-	{
-		if (!is_valid_arg(av[5]) || ft_atoi(av[5]) <= 0)
-			return (ERROR_ARGS);
-		game->args.nb_eat_needed = ft_atoi(av[5]);
-	}
-	else
-		game->args.nb_eat_needed = -1;
 	return (SUCCESS);
 }
 
@@ -76,7 +68,6 @@ static t_error	ft_init_philosophers(t_game *game)
 		game->philosophers[i].id = i + 1;
 		game->philosophers[i].state = THINKING;
 		game->philosophers[i].last_meal = get_current_time();
-		game->philosophers[i].meals_eaten = 0;
 		game->philosophers[i].left_fork = &game->forks[i];
 		game->philosophers[i].right_fork = &game->forks[(i + 1)
 			% game->args.nb_philo];
