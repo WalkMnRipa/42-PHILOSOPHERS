@@ -6,11 +6,32 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:27 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/16 17:34:47 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/17 17:38:08 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
+
+bool	ft_check_all_ate_enough(t_game *game)
+{
+	unsigned int	i;
+
+	if (game->args.nb_eat <= 0)
+		return (false);
+	i = 0;
+	while (i < game->args.nb_philo)
+	{
+		pthread_mutex_lock(&game->meal_lock);
+		if (game->philosophers[i].eat_count < game->args.nb_eat)
+		{
+			pthread_mutex_unlock(&game->meal_lock);
+			return (false);
+		}
+		pthread_mutex_unlock(&game->meal_lock);
+		i++;
+	}
+	return (true);
+}
 
 bool	ft_check_death(t_game *game)
 {
@@ -75,7 +96,7 @@ t_error	ft_run_simulation(t_game *game)
 	}
 	while (!game->simulation_ended)
 	{
-		if (ft_check_death(game))
+		if (ft_check_death(game) || ft_check_all_ate_enough(game))
 		{
 			pthread_mutex_lock(&game->state_mutex);
 			game->simulation_ended = true;

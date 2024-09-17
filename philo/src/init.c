@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:34 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/16 16:31:58 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/17 17:40:20 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,15 @@ static t_error	ft_parse_args(t_game *game, int ac, char **av)
 	if (game->args.t_die < MIN_T_ARGS || game->args.t_eat < MIN_T_ARGS
 		|| game->args.t_sleep < MIN_T_ARGS)
 		return (ERROR_ARGS);
+	game->args.nb_eat = -1;
+	if (ac == 6)
+	{
+		if (!is_valid_arg(av[5]))
+			return (ERROR_ARGS);
+		game->args.nb_eat = ft_atoi(av[5]);
+		if (game->args.nb_eat <= 0)
+			return (ERROR_ARGS);
+	}
 	return (SUCCESS);
 }
 
@@ -72,6 +81,7 @@ static t_error	ft_init_philosophers(t_game *game)
 		game->philosophers[i].right_fork = &game->forks[(i + 1)
 			% game->args.nb_philo];
 		game->philosophers[i].game = game;
+		game->philosophers[i].eat_count = 0;
 		i++;
 	}
 	return (SUCCESS);

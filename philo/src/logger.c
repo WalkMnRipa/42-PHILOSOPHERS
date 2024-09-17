@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:36 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/16 19:41:59 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/17 17:37:07 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ void	ft_eating(t_game *game, t_philo *philo)
 	pthread_mutex_unlock(&game->state_mutex);
 	pthread_mutex_lock(&game->meal_lock);
 	philo->last_meal = get_current_time();
+	philo->eat_count++;
 	pthread_mutex_unlock(&game->meal_lock);
 	philo->state = EATING;
 	ft_print_state(game, philo, MSG_IS_EATING);

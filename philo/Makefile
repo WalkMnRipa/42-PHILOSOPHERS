@@ -26,7 +26,7 @@ $(NAME): $(OBJS)
 $(OBJS_DIR)/%.o: %.c
 	@mkdir -p $(@D)
 	@printf "$(YELLOW)Compiling $<... $(RESET)"
-	@if $(CC) $(CFLAGS) -MMD -MP -I./includes -c $< -o $@ 2>/dev/null; then 		printf "$(GREEN)Done!$(RESET)\n"; 	else 		printf "$(RED)Failed!$(RESET)\n"; 		exit 1; 	fi
+	@if $(CC) $(CFLAGS) -MMD -MP -I./includes -c $< -o $@ ; then 		printf "$(GREEN)Done!$(RESET)\n"; 	else 		printf "$(RED)Failed!$(RESET)\n"; 		exit 1; 	fi
 
 clean:
 	@echo "$(YELLOW)Cleaning up...$(RESET)"
