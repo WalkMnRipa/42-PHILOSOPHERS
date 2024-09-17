@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 01:00:19 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/16 17:33:59 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/17 18:11:51 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void	ft_print_state(t_game *game, t_philo *philo, const char *msg)
 	if (!game->simulation_ended)
 	{
 		current_time = get_current_time() - game->start_time;
-		printf("%s %zu %d %s\n", get_color(philo->state), current_time,
+		printf("%s%zu %d %s\n", get_color(philo->state), current_time,
 			philo->id, msg);
 		if (ft_strcmp(msg, MSG_DIED) == 0)
 			game->simulation_ended = true;

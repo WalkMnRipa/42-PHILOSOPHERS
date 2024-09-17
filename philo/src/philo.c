@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:27 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/17 17:38:08 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/17 18:42:38 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ void	*ft_philo_loop(void *arg)
 	t_game	*game;
 
 	philo = (t_philo *)arg;
+	if (philo->id % 2 == 1)
+		usleep(500);
 	game = philo->game;
 	while (!game->simulation_ended)
 	{
@@ -85,15 +87,12 @@ t_error	ft_run_simulation(t_game *game)
 {
 	unsigned int	i;
 
-	i = 0;
+	i = -1;
 	game->start_time = get_current_time();
-	while (i < game->args.nb_philo)
-	{
+	while (++i < game->args.nb_philo)
 		if (pthread_create(&game->philosophers[i].thread, NULL, &ft_philo_loop,
 				&game->philosophers[i]))
 			return (ERROR_THREAD_CREATE);
-		i++;
-	}
 	while (!game->simulation_ended)
 	{
 		if (ft_check_death(game) || ft_check_all_ate_enough(game))
@@ -104,12 +103,9 @@ t_error	ft_run_simulation(t_game *game)
 		}
 		usleep(500);
 	}
-	i = 0;
-	while (i < game->args.nb_philo)
-	{
+	i = -1;
+	while (++i < game->args.nb_philo)
 		if (pthread_join(game->philosophers[i].thread, NULL))
 			return (ERROR_THREAD_JOIN);
-		i++;
-	}
 	return (SUCCESS);
 }

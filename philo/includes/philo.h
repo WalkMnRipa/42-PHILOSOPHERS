@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:13:30 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/17 17:37:56 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/17 18:39:49 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,9 @@ typedef enum s_error
 	ERROR_MALLOC,
 	ERROR_MUTEX_INIT,
 	ERROR_THREAD_CREATE,
-	ERROR_THREAD_JOIN
+	ERROR_THREAD_JOIN,
+	ERROR_GETTIMEOFDAY,
+	ERROR_TAKE_FORKS
 }					t_error;
 
 typedef struct s_args
@@ -114,6 +116,7 @@ size_t				get_current_time(void);
 void				ft_usleep(size_t milliseconds);
 
 /**************LOGGER**************/
+int					take_forks(t_game *game, t_philo *philo);
 void				ft_thinking(t_game *game, t_philo *philo);
 void				ft_sleeping(t_game *game, t_philo *philo);
 void				ft_eating(t_game *game, t_philo *philo);
