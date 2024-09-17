@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:13:30 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/16 17:34:24 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/16 19:39:12 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@
 # define THINKING_COLOR "\033[1;34m"
 # define RESET_COLOR "\033[0m"
 # define ATE_ENOUGH_COLOR "\033[1;35m"
-# define ERROR_MSG_COLOR "\033[1;37m"
+# define ERROR_MSG_COLOR "\033[1;31m"
 
 # define ERROR_ARGS_MSG "Usage: ./philo nb_philo t_die t_eat t_sleep [nb_eat]"
 # define ERROR_INIT_MSG "Initialize game failed"
@@ -112,6 +112,8 @@ size_t				get_current_time(void);
 void				ft_usleep(size_t milliseconds);
 
 /**************LOGGER**************/
+void				take_forks(t_game *game, t_philo *philo);
+void				drop_forks(t_philo *philo);
 void				ft_thinking(t_game *game, t_philo *philo);
 void				ft_sleeping(t_game *game, t_philo *philo);
 void				ft_eating(t_game *game, t_philo *philo);
