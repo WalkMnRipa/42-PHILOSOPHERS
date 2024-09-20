@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:34 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/17 17:40:20 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/20 18:33:43 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,6 @@ static t_error	ft_init_philosophers(t_game *game)
 		game->philosophers[i].right_fork = &game->forks[(i + 1)
 			% game->args.nb_philo];
 		game->philosophers[i].game = game;
-		game->philosophers[i].eat_count = 0;
 		i++;
 	}
 	return (SUCCESS);
@@ -105,5 +104,9 @@ t_error	ft_init_game(t_game *game, int ac, char **av)
 		return (error);
 	}
 	game->simulation_ended = false;
+	game->current_turn = 0;
+	game->philos_finished = 0;
+	if (pthread_mutex_init(&game->turn_mutex, NULL))
+		return (ERROR_MUTEX_INIT);
 	return (SUCCESS);
 }

@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 17:30:44 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/14 02:15:54 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/20 18:16:42 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ void	ft_destroy_mutexes(t_game *game)
 	}
 	pthread_mutex_destroy(&game->state_mutex);
 	pthread_mutex_destroy(&game->meal_lock);
+	pthread_mutex_destroy(&game->turn_mutex);
 }
 
 void	ft_cleanup(t_game *game)

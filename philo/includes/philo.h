@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:13:30 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/17 18:39:49 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/20 19:38:00 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ typedef struct s_philo
 	pthread_mutex_t	*right_fork;
 	t_state			state;
 	size_t			last_meal;
-	int				eat_count;
+	int				meals_eaten;
 	struct s_game	*game;
 }					t_philo;
 
@@ -94,7 +94,10 @@ typedef struct s_game
 	pthread_mutex_t	meal_lock;
 	pthread_mutex_t	state_mutex;
 	t_args			args;
+	unsigned int	current_turn;
+	pthread_mutex_t	turn_mutex;
 	bool			simulation_ended;
+	unsigned int	philos_finished;
 
 }					t_game;
 
@@ -116,13 +119,14 @@ size_t				get_current_time(void);
 void				ft_usleep(size_t milliseconds);
 
 /**************LOGGER**************/
-int					take_forks(t_game *game, t_philo *philo);
+void				drop_forks(t_philo *philo);
+void				take_forks(t_game *game, t_philo *philo);
 void				ft_thinking(t_game *game, t_philo *philo);
 void				ft_sleeping(t_game *game, t_philo *philo);
 void				ft_eating(t_game *game, t_philo *philo);
 
 /**************PHILO**************/
-bool				ft_check_all_ate_enough(t_game *game);
+bool				ft_check_meals(t_game *game);
 bool				ft_check_death(t_game *game);
 void				*ft_philo_loop(void *arg);
 t_error				ft_run_simulation(t_game *game);

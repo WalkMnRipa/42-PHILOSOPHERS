@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:36 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/18 13:02:34 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/20 19:43:13 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,42 +25,47 @@ void	ft_sleeping(t_game *game, t_philo *philo)
 	ft_usleep(game->args.t_sleep);
 }
 
-int	take_forks(t_game *game, t_philo *philo)
+static void	update_philo_eating_state(t_game *game, t_philo *philo)
 {
-	pthread_mutex_lock(philo->right_fork);
-	philo->state = FORK;
-	ft_print_state(game, philo, MSG_FORK);
-	if (game->args.nb_philo == 1)
+	pthread_mutex_lock(&game->meal_lock);
+	philo->last_meal = get_current_time();
+	if (game->args.nb_eat == -1 || philo->meals_eaten < game->args.nb_eat)
 	{
-		ft_usleep(game->args.t_die);
-		pthread_mutex_unlock(philo->right_fork);
-		return (ERROR_TAKE_FORKS);
+		philo->meals_eaten++;
+		philo->state = EATING;
+		ft_print_state(game, philo, MSG_IS_EATING);
+		pthread_mutex_lock(&game->turn_mutex);
+		game->current_turn++;
+		pthread_mutex_unlock(&game->turn_mutex);
 	}
-	pthread_mutex_lock(philo->left_fork);
-	ft_print_state(game, philo, MSG_FORK);
-	return (SUCCESS);
+	pthread_mutex_unlock(&game->meal_lock);
+}
+
+static void	check_simulation_end(t_game *game, t_philo *philo)
+{
+	if (game->args.nb_eat != -1 && philo->meals_eaten >= game->args.nb_eat)
+	{
+		pthread_mutex_lock(&game->state_mutex);
+		game->philos_finished++;
+		if (game->philos_finished == game->args.nb_philo)
+			game->simulation_ended = true;
+		pthread_mutex_unlock(&game->state_mutex);
+	}
 }
 
 void	ft_eating(t_game *game, t_philo *philo)
 {
-	if (take_forks(game, philo) == ERROR_TAKE_FORKS)
-		return ;
+	take_forks(game, philo);
 	pthread_mutex_lock(&game->state_mutex);
 	if (game->simulation_ended)
 	{
 		pthread_mutex_unlock(&game->state_mutex);
-		pthread_mutex_unlock(philo->left_fork);
-		pthread_mutex_unlock(philo->right_fork);
+		drop_forks(philo);
 		return ;
 	}
 	pthread_mutex_unlock(&game->state_mutex);
-	pthread_mutex_lock(&game->meal_lock);
-	philo->last_meal = get_current_time();
-	philo->state = EATING;
-	ft_print_state(game, philo, MSG_IS_EATING);
-	philo->eat_count++;
-	pthread_mutex_unlock(&game->meal_lock);
+	update_philo_eating_state(game, philo);
 	ft_usleep(game->args.t_eat);
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->right_fork);
+	drop_forks(philo);
+	check_simulation_end(game, philo);
 }

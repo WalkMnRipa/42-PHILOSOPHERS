@@ -6,31 +6,33 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:27 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/17 18:42:38 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/20 18:36:26 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-bool	ft_check_all_ate_enough(t_game *game)
+bool	ft_check_meals(t_game *game)
 {
 	unsigned int	i;
+	bool			all_ate_enough;
 
-	if (game->args.nb_eat <= 0)
+	if (game->args.nb_eat == -1)
 		return (false);
+	pthread_mutex_lock(&game->meal_lock);
+	all_ate_enough = true;
 	i = 0;
 	while (i < game->args.nb_philo)
 	{
-		pthread_mutex_lock(&game->meal_lock);
-		if (game->philosophers[i].eat_count < game->args.nb_eat)
+		if (game->philosophers[i].meals_eaten < game->args.nb_eat)
 		{
-			pthread_mutex_unlock(&game->meal_lock);
-			return (false);
+			all_ate_enough = false;
+			break ;
 		}
-		pthread_mutex_unlock(&game->meal_lock);
 		i++;
 	}
-	return (true);
+	pthread_mutex_unlock(&game->meal_lock);
+	return (all_ate_enough);
 }
 
 bool	ft_check_death(t_game *game)
@@ -67,18 +69,18 @@ void	*ft_philo_loop(void *arg)
 	t_game	*game;
 
 	philo = (t_philo *)arg;
-	if (philo->id % 2 == 1)
+	if (philo->id % 2 == 0)
 		usleep(500);
 	game = philo->game;
 	while (!game->simulation_ended)
 	{
-		ft_thinking(game, philo);
+		ft_eating(game, philo);
 		if (game->simulation_ended)
 			break ;
-		ft_eating(game, philo);
-		if (game->simulation_ended || game->args.nb_philo == 1)
-			break ;
 		ft_sleeping(game, philo);
+		if (game->simulation_ended)
+			break ;
+		ft_thinking(game, philo);
 	}
 	return (NULL);
 }
@@ -95,7 +97,7 @@ t_error	ft_run_simulation(t_game *game)
 			return (ERROR_THREAD_CREATE);
 	while (!game->simulation_ended)
 	{
-		if (ft_check_death(game) || ft_check_all_ate_enough(game))
+		if (ft_check_death(game) || ft_check_meals(game))
 		{
 			pthread_mutex_lock(&game->state_mutex);
 			game->simulation_ended = true;
