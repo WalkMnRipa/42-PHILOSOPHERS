@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:27 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/20 18:36:26 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/21 18:47:06 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void	*ft_philo_loop(void *arg)
 	while (!game->simulation_ended)
 	{
 		ft_eating(game, philo);
-		if (game->simulation_ended)
+		if (game->simulation_ended || game->args.nb_philo == 1)
 			break ;
 		ft_sleeping(game, philo);
 		if (game->simulation_ended)

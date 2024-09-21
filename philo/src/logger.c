@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:36 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/20 19:43:13 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/21 18:46:26 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,12 @@ static void	check_simulation_end(t_game *game, t_philo *philo)
 void	ft_eating(t_game *game, t_philo *philo)
 {
 	take_forks(game, philo);
+	if (game->args.nb_philo == 1)
+	{
+		ft_usleep(game->args.t_die);
+		drop_forks(philo);
+		return ;
+	}
 	pthread_mutex_lock(&game->state_mutex);
 	if (game->simulation_ended)
 	{

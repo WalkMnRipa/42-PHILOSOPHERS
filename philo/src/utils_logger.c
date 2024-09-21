@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/20 19:40:09 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/20 19:40:26 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/21 18:45:56 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ void	take_forks(t_game *game, t_philo *philo)
 	pthread_mutex_lock(first_fork);
 	philo->state = FORK;
 	ft_print_state(game, philo, MSG_FORK);
+	if (game->args.nb_philo == 1)
+		return ;
 	pthread_mutex_lock(second_fork);
 	ft_print_state(game, philo, MSG_FORK);
 }
