@@ -48,21 +48,3 @@ Example:
 ```
 
 This runs the simulation with 5 philosophers, where each philosopher has 800ms to start eating before they die, takes 200ms to eat, 200ms to sleep, and must eat at least 7 times.
-
-## Project Structure
-
-- `philo.h`: Main header file with struct definitions and function prototypes.
-- `main.c`: Entry point of the program.
-- `init.c`: Initialization functions for the simulation.
-- `philo.c`: Core logic for philosopher actions and simulation loop.
-- `logger.c`: Functions for logging philosopher states.
-- `utils.c`: Utility functions including time management and argument parsing.
-- `cleanup.c`: Functions for proper cleanup and memory management.
-
-## Notes
-
-- The program uses threads to represent philosophers and mutexes to represent forks.
-- Ensure proper error handling and resource cleanup.
-- The simulation aims to prevent deadlocks and ensure fair resource allocation.
-
-Feel free to explore the code and modify parameters to observe different outcomes in the dining philosophers' dilemma!
