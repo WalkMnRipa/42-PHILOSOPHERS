@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/12 16:36:36 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/21 18:46:26 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/09/23 17:02:05 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 void	ft_thinking(t_game *game, t_philo *philo)
 {
 	philo->state = THINKING;
-	ft_print_state(game, philo, MSG_IS_THINKING);
+	(game, philo, MSG_IS_THINKING);
 }
 
 void	ft_sleeping(t_game *game, t_philo *philo)
