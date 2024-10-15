@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:13:48 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/20 18:34:14 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/10/01 19:01:28 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,10 @@ int	main(int ac, char **av)
 	t_error	error;
 
 	if (ac != 5 && ac != 6)
-		return (ft_print_error(ERROR_ARGS_MSG), ERROR_ARGS);
+	{
+		ft_print_error(ERROR_ARGS_MSG);
+		return (ERROR_ARGS);
+	}
 	error = ft_init_game(&game, ac, av);
 	if (error != SUCCESS)
 		return (ft_handle_error(&game, error, ERROR_INIT_MSG));

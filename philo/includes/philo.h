@@ -6,7 +6,7 @@
 /*   By: jcohen <jcohen@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/11 19:13:30 by jcohen            #+#    #+#             */
-/*   Updated: 2024/09/20 19:38:00 by jcohen           ###   ########.fr       */
+/*   Updated: 2024/10/01 19:00:02 by jcohen           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ typedef enum s_state
 
 typedef enum s_error
 {
-	SUCCESS = 0,
+	SUCCESS,
 	ERROR_ARGS,
 	ERROR_MALLOC,
 	ERROR_MUTEX_INIT,
